@@ -24,3 +24,8 @@
 - `FORMULAS.md` – formulas used by the code in LaTeX-friendly form.
 - `TEST_SUMMARY.md` – commands run and results.
 - `.gitignore` – ignores `reference_paper/` as requested.
+
+## Future Extensions
+- Ladder-move enumeration to generate all pipe dreams for a permutation and directly verify column independence on the pattern-avoiding family (status: not started).
+- `DiagonalSeparationPropertyQ` helper to algorithmically test Lemma 2.3 on bottom/top pipe dreams (status: not started).
+- Brute-force conjecture sweeps over $S_n$ for small $n$ to accumulate evidence and counterexample search (status: not started).
