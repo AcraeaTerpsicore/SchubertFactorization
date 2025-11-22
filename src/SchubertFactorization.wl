@@ -11,7 +11,8 @@ ClearAll[
   AvoidsPatternsQ, LehmerSlopeConditionQ, RequiredPatterns,
   AvoidsFactorizationPatternsQ, BottomPipeDreamColumns,
   ColumnFactors, FactorizationPolynomial, FactorizationCertificate,
-  RectangularObstructionQ, ElementarySymmetric
+  RectangularObstructionQ, ElementarySymmetric,
+  DiagonalSeparationPropertyQ
 ];
 
 (* Symbol for x_i *)
@@ -124,6 +125,22 @@ BottomPipeDreamColumns[perm_List] := Module[
   cols
 ];
 
+(* Diagonal separation property from Lemma 2.3 *)
+DiagonalSeparationPropertyQ[perm_List] := Module[
+  {cols = Select[BottomPipeDreamColumns[perm], #["Height"] > 0 &]},
+  AllTrue[
+    Subsets[cols, {2}],
+    Module[{c1 = #[[1]], c2 = #[[2]]},
+      If[c1["Column"] == c2["Column"], True,
+        If[c1["Column"] < c2["Column"],
+          c1["TopRow"] + c1["Column"] > c2["BottomRow"] + c2["Column"],
+          c2["TopRow"] + c2["Column"] > c1["BottomRow"] + c1["Column"]
+        ]
+      ]
+    ] &
+  ]
+];
+
 ColumnFactors[perm_List] := Module[
   {cols = BottomPipeDreamColumns[perm]},
   DeleteCases[
@@ -149,15 +166,17 @@ FactorizationCertificate[perm_List] := Module[
   {
     patternOK = AvoidsFactorizationPatternsQ[perm],
     slopeOK = LehmerSlopeConditionQ[perm],
+    diagOK = DiagonalSeparationPropertyQ[perm],
     schubert, predicted, matches
   },
   schubert = SchubertPolynomial[perm];
-  predicted = If[patternOK && slopeOK, FactorizationPolynomial[perm], Missing["NotApplicable"]];
+  predicted = If[patternOK && slopeOK && diagOK, FactorizationPolynomial[perm], Missing["NotApplicable"]];
   matches = If[MissingQ[predicted], False, Simplify[Expand[schubert - predicted] === 0]];
   <|
     "Permutation" -> perm,
     "PatternAvoidance" -> patternOK,
     "LehmerSlopeCondition" -> slopeOK,
+    "DiagonalSeparationProperty" -> diagOK,
     "PredictedFactorization" -> predicted,
     "SchubertPolynomial" -> schubert,
     "MatchesPrediction" -> matches

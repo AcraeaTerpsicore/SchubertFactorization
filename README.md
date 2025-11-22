@@ -1,7 +1,7 @@
 # Schubert Polynomial Factorization (WL)
 
 - Wolfram Language utilities to compute Schubert polynomials, check the pattern-avoidance criterion ($1432$, $1423$, $4132$, $3142$), and build the predicted elementary-symmetric factorization described in the reference writeup.
-- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, and helper utilities.
+- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `DiagonalSeparationPropertyQ`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, and helper utilities.
 - Tests: `tests/run_tests.wls` (uses the Windows install of wolframscript) plus the recorded results in `TEST_SUMMARY.md`.
 
 - Reference: [SCHUBERT POLYNOMIALS AND ELEMENTARY SYMMETRIC PRODUCTS](https://arxiv.org/abs/2511.15920)
@@ -27,5 +27,4 @@
 
 ## Future Extensions
 - Ladder-move enumeration to generate all pipe dreams for a permutation and directly verify column independence on the pattern-avoiding family (status: not started).
-- `DiagonalSeparationPropertyQ` helper to algorithmically test Lemma 2.3 on bottom/top pipe dreams (status: not started).
 - Brute-force conjecture sweeps over $S_n$ for small $n$ to accumulate evidence and counterexample search (status: not started).

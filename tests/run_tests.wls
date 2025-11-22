@@ -26,7 +26,9 @@ results = {
   Module[{obstruct = RectangularObstructionQ[{3, 4, 5, 1, 2}]},
     assert["Rectangular obstruction detected for {3,4,5,1,2}", obstruct]
   ],
-  assert["Pattern avoidance fails on 1432", Not@AvoidsFactorizationPatternsQ[{1, 4, 3, 2}]]
+  assert["Pattern avoidance fails on 1432", Not@AvoidsFactorizationPatternsQ[{1, 4, 3, 2}]],
+  assert["Diagonal separation holds for {1,2,4,3}", DiagonalSeparationPropertyQ[{1, 2, 4, 3}]],
+  assert["Diagonal separation fails for {1,4,3,2}", Not@DiagonalSeparationPropertyQ[{1, 4, 3, 2}]]
 };
 
 If[AllTrue[results, TrueQ],
