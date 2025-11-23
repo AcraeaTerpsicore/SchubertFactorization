@@ -12,7 +12,7 @@ ClearAll[
   AvoidsFactorizationPatternsQ, BottomPipeDreamColumns,
   ColumnFactors, FactorizationPolynomial, FactorizationCertificate,
   RectangularObstructionQ, ElementarySymmetric,
-  DiagonalSeparationPropertyQ
+  DiagonalSeparationPropertyQ, ConjectureSweep
 ];
 
 (* Symbol for x_i *)
@@ -108,21 +108,26 @@ LehmerSlopeConditionQ[perm_List] := Module[{code = LehmerCode[perm]},
 
 (* Column information extracted from the bottom pipe dream (left-justified) *)
 BottomPipeDreamColumns[perm_List] := Module[
-  {code = LehmerCode[perm], maxCol, cols},
+  {code = LehmerCode[perm], maxCol, cross, cols = {}, runs},
   maxCol = Max[code];
-  cols = Table[
-    Module[{rows = Flatten[Position[code, x_ /; x >= c]]},
-      <|
-        "Column" -> c,
-        "Rows" -> rows,
-        "Height" -> Length[rows],
-        "TopRow" -> If[rows === {}, Missing["Empty"], Min[rows]],
-        "BottomRow" -> If[rows === {}, Missing["Empty"], Max[rows]]
-      |>
+  cross = Table[j <= code[[i]], {i, Length[code]}, {j, maxCol}];
+  Do[
+    runs = SplitBy[Range[Length[code]], cross[[#, c]] &];
+    Do[
+      If[TrueQ[cross[[run[[1]], c]]],
+        AppendTo[cols, <|
+          "Column" -> c,
+          "Rows" -> run,
+          "Height" -> Length[run],
+          "TopRow" -> First[run],
+          "BottomRow" -> Last[run]
+        |>]
+      ],
+      {run, runs}
     ],
     {c, 1, maxCol}
   ];
-  cols
+  SortBy[cols, {#["Column"] &, #["TopRow"] &}]
 ];
 
 (* Diagonal separation property from Lemma 2.3 *)
@@ -180,6 +185,23 @@ FactorizationCertificate[perm_List] := Module[
     "PredictedFactorization" -> predicted,
     "SchubertPolynomial" -> schubert,
     "MatchesPrediction" -> matches
+  |>
+];
+
+(* Brute-force sweep over S_n to collect evidence for/against the conjecture. *)
+ConjectureSweep[n_Integer?Positive] := Module[
+  {perms = Permutations[Range[n]], certs, avoid, factorable, violations},
+  certs = FactorizationCertificate /@ perms;
+  avoid = Select[certs, #["PatternAvoidance"] &];
+  factorable = Select[avoid, #["LehmerSlopeCondition"] && #["DiagonalSeparationProperty"] &];
+  violations = Select[factorable, Not[#["MatchesPrediction"]] &];
+  <|
+    "n" -> n,
+    "TotalPermutations" -> Length[perms],
+    "PatternAvoiding" -> Length[avoid],
+    "FactorableCandidates" -> Length[factorable],
+    "MatchingFactorizations" -> Length[factorable] - Length[violations],
+    "Violations" -> violations
   |>
 ];
 

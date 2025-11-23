@@ -1,7 +1,7 @@
 # Schubert Polynomial Factorization (WL)
 
 - Wolfram Language utilities to compute Schubert polynomials, check the pattern-avoidance criterion ($1432$, $1423$, $4132$, $3142$), and build the predicted elementary-symmetric factorization described in the reference writeup.
-- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `DiagonalSeparationPropertyQ`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, and helper utilities.
+- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `DiagonalSeparationPropertyQ`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, `ConjectureSweep`, and helper utilities.
 - Tests: `tests/run_tests.wls` (uses the Windows install of wolframscript) plus the recorded results in `TEST_SUMMARY.md`.
 
 - Reference: [SCHUBERT POLYNOMIALS AND ELEMENTARY SYMMETRIC PRODUCTS](https://arxiv.org/abs/2511.15920)
@@ -15,6 +15,7 @@
   Get["/mnt/d/ExplorerDownload/arXiv-2511.15920v1/src/SchubertFactorization.wl"];
   SchubertPolynomial[{1, 4, 3, 2}]
   FactorizationCertificate[{1, 2, 4, 3}]
+  ConjectureSweep[4]  (* brute-force evidence over S_4 *)
   ```
 - The factorization certificate reports the pattern-avoidance check, the Lehmer slope condition, the predicted product of $e_k(x_1,\dots,x_m)$ factors, and whether it matches a direct Schubert polynomial computation.
 
