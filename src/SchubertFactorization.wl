@@ -12,7 +12,10 @@ ClearAll[
   AvoidsFactorizationPatternsQ, BottomPipeDreamColumns,
   ColumnFactors, FactorizationPolynomial, FactorizationCertificate,
   RectangularObstructionQ, ElementarySymmetric,
-  DiagonalSeparationPropertyQ, ConjectureSweep
+  DiagonalSeparationPropertyQ, ConjectureSweep,
+  BottomPipeDreamCrosses, NormalizePipeDream,
+  SimpleLadderMoves, AllPipeDreams, PipeDreamColumns,
+  ColumnIndependenceQ, PipeDreamPermutation
 ];
 
 (* Symbol for x_i *)
@@ -107,6 +110,17 @@ LehmerSlopeConditionQ[perm_List] := Module[{code = LehmerCode[perm]},
 ];
 
 (* Column information extracted from the bottom pipe dream (left-justified) *)
+BottomPipeDreamCrosses[perm_List] := Module[
+  {code = LehmerCode[perm]},
+  Flatten[
+    Table[
+      Table[{row, col}, {col, 1, code[[row]]}],
+      {row, Length[code]}
+    ],
+    1
+  ]
+];
+
 BottomPipeDreamColumns[perm_List] := Module[
   {code = LehmerCode[perm], maxCol, cross, cols = {}, runs},
   maxCol = Max[code];
@@ -128,6 +142,115 @@ BottomPipeDreamColumns[perm_List] := Module[
     {c, 1, maxCol}
   ];
   SortBy[cols, {#["Column"] &, #["TopRow"] &}]
+];
+
+(* Pipe dream normalization and ladder moves *)
+NormalizePipeDream[pd_List] := SortBy[pd, {First, Last}];
+
+SimpleLadderMoves[pd_List] := Module[
+  {crosses = AssociationThread[NormalizePipeDream[pd] -> True], moves = {}},
+  Do[
+    With[{r = rc[[1]], c = rc[[2]], target = {rc[[1]] - 1, rc[[2]] + 1}},
+      If[r > 1 && !KeyExistsQ[crosses, target],
+        AppendTo[moves, NormalizePipeDream[Append[DeleteCases[pd, rc], target]]]
+      ]
+    ],
+    {rc, NormalizePipeDream[pd]}
+  ];
+  DeleteDuplicates[moves]
+];
+
+PipeDreamColumns[pd_List] := Module[
+  {cols = GroupBy[pd, Last -> First], runs},
+  KeyValueMap[
+    Function[{col, rows},
+      runs = Split[Sort[rows], #2 == #1 + 1 &];
+      Table[
+        <|
+          "Column" -> col,
+          "Rows" -> run,
+          "Height" -> Length[run],
+          "TopRow" -> First[run],
+          "BottomRow" -> Last[run]
+        |>,
+        {run, runs}
+      ]
+    ],
+    cols
+  ] // Flatten // SortBy[{#["Column"] &, #["TopRow"] &}]
+];
+
+ColumnIndependenceQ[perm_List] := Module[
+  {baselineHeights, dreams},
+  dreams = AllPipeDreams[perm];
+  baselineHeights = PipeDreamColumns[BottomPipeDreamCrosses[perm]][[All, "Height"]] // Sort;
+  AllTrue[dreams,
+    Sort[PipeDreamColumns[#][[All, "Height"]]] === baselineHeights &
+  ]
+];
+
+AllPipeDreams[perm_List] := Module[
+  {n = Length[perm], l = PermutationInversionNumber[perm], start,
+   seen, queue, ladder, potentialCells, brute = {}, threshold = 200000},
+  start = NormalizePipeDream[BottomPipeDreamCrosses[perm]];
+  seen = <|ToString[start, InputForm] -> start|>;
+  queue = {start};
+  While[queue =!= {},
+    With[{current = First[queue]},
+      queue = Rest[queue];
+      Do[
+        If[! KeyExistsQ[seen, ToString[npd, InputForm]],
+          seen[ToString[npd, InputForm]] = npd;
+          queue = Append[queue, npd];
+        ],
+        {npd, SimpleLadderMoves[current]}
+      ];
+    ];
+  ];
+  ladder = Select[Values[seen], PipeDreamPermutation[#, n] === perm &];
+  potentialCells = Flatten[
+    Table[{r, c}, {r, 1, n}, {c, 1, n - 1}],
+    1
+  ];
+  If[Binomial[Length[potentialCells], l] <= threshold,
+    brute = Select[
+      Subsets[potentialCells, {l}],
+      PipeDreamPermutation[#, n] === perm &
+    ];
+  ];
+  DeleteDuplicatesBy[Join[ladder, brute], ToString[#, InputForm] &]
+];
+
+PipeDreamPermutation[pd_List, n_Integer?Positive] := Module[
+  {maxCol, crossSet, east, north, exitCols},
+  maxCol = Max[Last /@ pd, n] + n;
+  crossSet = AssociationThread[NormalizePipeDream[pd] -> True];
+  east = ConstantArray[Null, {n, maxCol}];
+  north = ConstantArray[Null, {n, maxCol}];
+  Do[
+    Do[
+      Module[{west, south, crossQ},
+        west = If[c == 1, r, east[[r, c - 1]]];
+        south = If[r == n, Null, north[[r + 1, c]]];
+        crossQ = KeyExistsQ[crossSet, {r, c}];
+        If[crossQ,
+          east[[r, c]] = west;
+          north[[r, c]] = south,
+          east[[r, c]] = south;
+          north[[r, c]] = west
+        ];
+      ],
+      {r, n, 1, -1}
+    ],
+    {c, 1, maxCol}
+  ];
+  exitCols = Table[
+    With[{pos = FirstPosition[north[[1, All]], r, Missing["NotFound"]]},
+      If[MissingQ[pos], Null, pos[[1]]]
+    ],
+    {r, 1, n}
+  ];
+  exitCols
 ];
 
 (* Diagonal separation property from Lemma 2.3 *)

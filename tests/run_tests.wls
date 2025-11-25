@@ -31,6 +31,13 @@ results = {
   assert["Diagonal separation fails for {1,4,3,2}", Not@DiagonalSeparationPropertyQ[{1, 4, 3, 2}]],
   Module[{sweep = ConjectureSweep[4]},
     assert["Conjecture sweep n=4 has no violations", sweep["Violations"] === {}]
+  ],
+  Module[{dreams = AllPipeDreams[{1, 4, 3, 2}]},
+    assert["AllPipeDreams cardinality for 1432", Length[dreams] == 5]
+  ],
+  Module[{dreams = AllPipeDreams[{1, 2, 4, 3}], heights},
+    heights = PipeDreamColumns[BottomPipeDreamCrosses[{1, 2, 4, 3}]][[All, "Height"]] // Sort;
+    assert["ColumnIndependenceQ holds on pattern-avoiding example", ColumnIndependenceQ[{1, 2, 4, 3}] && And @@ (Sort[PipeDreamColumns[#][[All, "Height"]]] == heights & /@ dreams)]
   ]
 };
 

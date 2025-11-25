@@ -1,7 +1,7 @@
 # Schubert Polynomial Factorization (WL)
 
 - Wolfram Language utilities to compute Schubert polynomials, check the pattern-avoidance criterion ($1432$, $1423$, $4132$, $3142$), and build the predicted elementary-symmetric factorization described in the reference writeup.
-- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `DiagonalSeparationPropertyQ`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, `ConjectureSweep`, and helper utilities.
+- Core code: `src/SchubertFactorization.wl` exposing `SchubertPolynomial`, `LehmerCode`, `DiagonalSeparationPropertyQ`, `AvoidsFactorizationPatternsQ`, `FactorizationCertificate`, `RectangularObstructionQ`, `ConjectureSweep`, ladder-move/pipe-dream utilities (`AllPipeDreams`, `ColumnIndependenceQ`), and helper utilities.
 - Tests: `tests/run_tests.wls` (uses the Windows install of wolframscript) plus the recorded results in `TEST_SUMMARY.md`.
 
 - Reference: [SCHUBERT POLYNOMIALS AND ELEMENTARY SYMMETRIC PRODUCTS](https://arxiv.org/abs/2511.15920)
@@ -16,6 +16,7 @@
   SchubertPolynomial[{1, 4, 3, 2}]
   FactorizationCertificate[{1, 2, 4, 3}]
   ConjectureSweep[4]  (* brute-force evidence over S_4 *)
+  AllPipeDreams[{1, 4, 3, 2}]  (* ladder + brute-force pipe dreams *)
   ```
 - The factorization certificate reports the pattern-avoidance check, the Lehmer slope condition, the predicted product of $e_k(x_1,\dots,x_m)$ factors, and whether it matches a direct Schubert polynomial computation.
 
@@ -27,5 +28,4 @@
 - `.gitignore` – ignores `reference_paper/` as requested.
 
 ## Future Extensions
-- Ladder-move enumeration to generate all pipe dreams for a permutation and directly verify column independence on the pattern-avoiding family (status: not started).
-- Brute-force conjecture sweeps over $S_n$ for small $n$ to accumulate evidence and counterexample search (status: not started).
+- (none pending)

@@ -1,3 +1,3 @@
 - Command: `/mnt/d/Software/Wolfram\\ Research/Mathematica/14.0/wolframscript.exe -script tests/run_tests.wls`
 - Environment: WSL (Arch) calling Windows Mathematica 14.0 `wolframscript.exe`.
-- Results: all scripted checks passed (Schubert polynomial for `{1,4,3,2}`, factorization certificates for `{1,2,4,3}` and `{2,1,3,4}`, rectangular obstruction flag on `{3,4,5,1,2}`, pattern-avoidance sanity check, diagonal separation property passes/fails on the expected examples, conjecture sweep over $S_4$ returns no violations).
+- Results: all scripted checks passed (Schubert polynomial for `{1,4,3,2}`, factorization certificates for `{1,2,4,3}` and `{2,1,3,4}`, rectangular obstruction flag on `{3,4,5,1,2}`, pattern-avoidance sanity check, diagonal separation property passes/fails on the expected examples, conjecture sweep over $S_4$ returns no violations, ladder/brute-force `AllPipeDreams` count for `{1,4,3,2}` is $5$, column independence holds on `{1,2,4,3}`).

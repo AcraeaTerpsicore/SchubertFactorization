@@ -11,3 +11,4 @@
   $\mathfrak S_w = \prod_{\text{columns }c} e_{h_c}(x_1,\dots,x_{r_c})$.
 - Diagonal separation property (Lemma 2.3): for columns $c<c'$ in the bottom pipe dream with top row $t_c$ and bottom row $b_{c'}$, the northeast diagonals satisfy $t_c + c > b_{c'} + c'$, ensuring columns slide independently.
 - Rectangular obstruction (Section 3): a Lehmer code of the form $(\underbrace{0,\dots,0}_{A},\underbrace{N,\dots,N}_{B},\underbrace{0,\dots,0}_{\ast})$ cannot yield such a product of elementary symmetric polynomials.
+- Pipe dream permutation reading: view an $n\times(n-1)$ grid with crosses at $(r,c)$; a cross lets the west-going pipe continue east and the south-going pipe continue north, while an elbow swaps west-to-north and south-to-east. Tracking pipes entering from the left of each row and exiting at the top yields $w(i)$ as the exit column of pipe $i$.
